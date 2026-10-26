@@ -66,7 +66,7 @@ The PCA and K-means work is included in the code and shown above, but is not dis
 
 [Read the project report](Project%20Report.pdf)
 
-**Note about the original report:** The PDF is preserved as our original course submission. The current code corrects date matching and time-delay calculations and uses newly downloaded stock prices, so its graphs may differ from the report. The report discusses closing prices and volatility, while the current analysis uses opening prices and does not calculate annualized volatility. Its title also mentions linear regression, but the supplied scripts do not fit a regression model. The report's claim of a clear positive relationship has not been validated by the corrected analysis and should be treated as an exploratory interpretation.
+**Note about the original report:** The PDF is our original course submission. The current code corrects date matching and time-delay calculations and uses newly downloaded stock prices, so its graphs may differ from the report. The report discusses closing prices and volatility, while the current analysis uses opening prices and does not calculate annualized volatility. Its title also mentions linear regression, but the supplied scripts do not fit a regression model. The report's claim of a clear positive relationship has not been validated by the corrected analysis and should be treated as an exploratory interpretation.
 
 ## Files
 
