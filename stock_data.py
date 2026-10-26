@@ -37,7 +37,7 @@ def price_analysis(ticker, day):
     high = float(data.loc[day, "High"])
     low = float(data.loc[day, "Low"])
     opening_price = float(data.loc[day, "Open"])
-    metrics = {"Close - Open:": close - opening_price, "Day Volatility": (high-low)/opening_price}
+    metrics = {"Close - Open": close - opening_price, "Day Volatility": (high-low)/opening_price}
     return metrics
 
 
