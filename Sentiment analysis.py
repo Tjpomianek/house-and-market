@@ -42,27 +42,6 @@ def sentiment_list(df):
         sent_dct[key] = ((statistics.mean(value) + 1) / 2) # normalizing
     return sent_dct
 
-def keep_same(df1, dct):
-    new_lst = []
-    date_lst = []
-    for i in range(len(df1)):
-        # Format the timestamp as string in a specific format
-        date_lst.append(str(df1.loc[i + 1, 'Date']))  # or another format
-    for key, value in dct.items():
-        date = str(key)
-        if date in date_lst:
-            new_lst.append(value)
-    return new_lst
-
-def difference(lst):
-    dif_lst = []
-    for i in range(2, len(lst)):
-        dif = lst[i - 1] - lst[i]
-        if dif < 0:
-            dif_lst.append(1)
-        else:
-            dif_lst.append(0)
-    return dif_lst
 def main():
 
     # Reading in the data
@@ -95,28 +74,28 @@ def main():
     df = df.rename(columns={'Open': 'stock_price', 'normalize': 'stock_n'})
     df['sentiment_n'] = scaler.fit_transform(df[['Sentiment']])
 
-    df["Daily Return"] = ((df['stock_price'].diff()))
+    df["Scaled price change"] = ((df['stock_price'].diff()))
 
     df["Sent change"] = (df['sentiment_n'].diff())
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
-    df['Daily Return'] = (scaler.fit_transform(df[['Daily Return']]) - 0.5)
-    #df['Sent change'] = scaler.fit_transform(df[['Sent change']])
+    df['Scaled price change'] = (scaler.fit_transform(df[['Scaled price change']]) - 0.5)
 
-    #print(df)
+    tick_positions = sorted(set([0, len(df) // 2, len(df) - 1]))
+    tick_dates = df.loc[tick_positions, 'Date'].dt.strftime('%Y-%m-%d')
     plt.plot(df['stock_n'], label = "Stock price")
     plt.plot(df['sentiment_n'], label = "Sentiment")
-    plt.xticks([0, 26, 53], ["2025-01-21", "2025-02-26", "2025-04-04"])
+    plt.xticks(tick_positions, tick_dates)
     plt.title('Normalized stock vs Normalized Sentiment Polarity value')
     plt.legend()
     plt.tight_layout()
     plt.savefig(FIGURES / 'price_sentiment.png', dpi=180)
     plt.close()
     
-    # fix this plot
-    plt.plot(df['Daily Return'], label = 'Daily Return')
+    # Plotting daily changes
+    plt.plot(df['Scaled price change'], label = 'Scaled price change')
     plt.plot(df['Sent change'], label = 'Sentiment change')
-    plt.xticks([1, 26, 53], ["2025-01-22", "2025-02-26", "2025-04-04"])
+    plt.xticks(tick_positions, tick_dates)
     plt.title("Daily change of stock and Sentiment polarity value Normalized")
     plt.legend()
     plt.tight_layout()
@@ -136,7 +115,6 @@ def main():
     plt.title('Directional agreement between sentiment and price changes')
     plt.ylabel('Proportion with the same direction')
     plt.xlabel('Sentiment leads price by N trading observations')
-    plt.tight_layout()
     plt.tight_layout()
     plt.savefig(FIGURES / 'lag_agreement.png', dpi=180)
     plt.close()
@@ -214,5 +192,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
