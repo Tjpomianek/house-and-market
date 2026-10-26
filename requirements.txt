@@ -6,3 +6,4 @@ textblob
 yfinance
 requests
 beautifulsoup4
+seaborn
