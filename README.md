@@ -26,13 +26,13 @@ The project uses Python to collect data, analyze text, compare daily changes, an
 
 This graph compares VOO's opening price with average daily sentiment. Both are scaled from 0 to 1 so they can be shown together.
 
-![Stock price and sentiment](figures/price_sentiment.png)
+![Stock price and sentiment](price_sentiment.png)
 
 ### Daily Changes
 
-This graph compares daily changes in VOO's opening price with changes in average sentiment. Each line has its own vertical axis because they use different units.
+This graph compares scaled changes in VOO's opening price with changes in normalized average sentiment. These are transformed values, not dollar changes or percentage returns.
 
-![Daily changes](figures/daily_changes.png)
+![Daily changes](daily_changes.png)
 
 ### Comparing Different Time Delays
 
@@ -40,7 +40,7 @@ This graph shows how often sentiment and stock prices changed in the same direct
 
 A delay of 0 compares changes on the same day. A delay of 1 compares the previous trading day's sentiment change with the current day's price change.
 
-![Directional agreement](figures/lag_agreement.png)
+![Directional agreement](lag_agreement.png)
 
 ### PCA and K-Means
 
@@ -48,7 +48,7 @@ We used TF-IDF to turn the text into numerical features based on word usage. PCA
 
 K-means then divided the documents into two groups. Each point is a document, and its color shows its group. These groups are based on similarities in the text, not whether the documents are positive or negative.
 
-![PCA and K-means](figures/pca_kmeans.png)
+![PCA and K-means](pca_kmeans.png)
 
 ### Document Groups and Stock Movement
 
@@ -56,7 +56,7 @@ This graph uses the same PCA coordinates, but colors the documents by whether VO
 
 This lets us look for patterns between document content and stock movement.
 
-![PCA and stock movement](figures/pca_stock_movement.png)
+![PCA and stock movement](pca_stock_movement.png)
 
 ## Project Report
 
@@ -73,7 +73,7 @@ The PCA and K-means work is included in the code and shown above, but is not dis
 - `Sentiment analysis.py`: Runs the analysis and saves the graphs.
 - `Whitehouse_scrape_APR_6.csv`: The original White House dataset.
 - `stock_data.csv`: Historical VOO prices downloaded again for this version.
-- `figures/`: Images displayed in this README.
+- The PNG files in this folder are the images displayed in this README. New runs save images in a `figures` folder.
 - `requirements.txt`: Python packages needed to run the project.
 - `Project Report.pdf`: The original written report.
 
