@@ -99,8 +99,4 @@ You do not need to run the White House scraper again because the original CSV is
 
 ## Notes
 
-This version keeps the original project's structure, with small corrections to date matching, time-delay comparisons, and file handling. It also saves the graphs so they can appear in the README.
-
-The graphs were generated again using the recovered White House data and newly downloaded stock prices, so they may differ from the original report.
-
 This is an exploratory project. The graphs can help identify patterns, but they do not prove that White House statements caused stock prices to change or that they can predict future prices.
