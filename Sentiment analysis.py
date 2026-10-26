@@ -1,3 +1,4 @@
+from pathlib import Path
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,10 +9,12 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 import seaborn as sns
-pd.set_option('future.no_silent_downcasting', True)
+BASE = Path(__file__).resolve().parent
+FIGURES = BASE / 'figures'
+FIGURES.mkdir(exist_ok=True)
 
-FILENAME_stock = 'Stock Data APR_6'
-FILENAME_WHITE_HOUSE = 'Whitehouse_scrape_APR_6.csv'
+FILENAME_stock = BASE / 'stock_data.csv'
+FILENAME_WHITE_HOUSE = BASE / 'Whitehouse_scrape_APR_6.csv'
 
 scaler = MinMaxScaler()
 
@@ -67,7 +70,8 @@ def main():
     Stock_data = pd.read_csv(FILENAME_stock)
 
     # Cleaning the data
-    Stock_data = Stock_data.drop(Stock_data.index[0])
+    Stock_data['Open'] = pd.to_numeric(Stock_data['Open'])
+    Stock_data = Stock_data.sort_values('Date').reset_index(drop=True)
 
     # Normalizing
     Stock_data['normalize'] = scaler.fit_transform(Stock_data[['Open']])
@@ -86,23 +90,15 @@ def main():
     sent_dct = sentiment_list(WHITE_HOUSE_data)
 
     #Keeping the same dates
-    Same_date_Sent = keep_same(Stock_data, sent_dct)
-    Same_date_Sent = np.array(Same_date_Sent).reshape(-1, 1)
-    Same_date_Sent = scaler.fit_transform(Same_date_Sent)
-    Same_date_Sent = Same_date_Sent.flatten().tolist()
-
-    #Creating the df
-    df = pd.DataFrame({
-        'Date': Stock_data['Date'],
-        'stock_price': Stock_data['Open'],
-        'stock_n': Stock_data['normalize'],
-        'sentiment_n': Same_date_Sent})
-
+    sent_df = pd.DataFrame(list(sent_dct.items()), columns=['Date', 'Sentiment'])
+    df = Stock_data.merge(sent_df, on='Date').sort_values('Date').reset_index(drop=True)
+    df = df.rename(columns={'Open': 'stock_price', 'normalize': 'stock_n'})
+    df['sentiment_n'] = scaler.fit_transform(df[['Sentiment']])
 
     df["Daily Return"] = ((df['stock_price'].diff()))
 
     df["Sent change"] = (df['sentiment_n'].diff())
-    df.replace([np.inf, -np.inf], 0.207244, inplace=True)
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
 
 
@@ -118,7 +114,9 @@ def main():
     plt.xticks([0, 26, 53], ["2025-01-21", "2025-02-26", "2025-04-04"])
     plt.title('Normalized stock vs Normalized Sentiment Polarity value')
     plt.legend()
-    plt.show()
+    plt.tight_layout()
+    plt.savefig(FIGURES / 'price_sentiment.png', dpi=180)
+    plt.close()
 
 
 
@@ -130,43 +128,43 @@ def main():
     plt.xticks([1, 26, 53], ["2025-01-22", "2025-02-26", "2025-04-04"])
     plt.title("Daily change of stock and Sentiment polarity value Normalized")
     plt.legend()
-    plt.show()
+    plt.tight_layout()
+    plt.savefig(FIGURES / 'daily_changes.png', dpi=180)
+    plt.close()
 
-    # finding the correlation    FIX
-    d1 = difference(df['Daily Return'])
-    d2 = difference(df['Sent change'])
-
+    # finding the directional agreement
+    d1 = np.sign(df['stock_price'].diff())
+    d2 = np.sign(df['sentiment_n'].diff())
 
     corr = []
     for j in range(9):
-        count = 0
-        for i in range(len(d1)):
-            if d1[i - j] == d2[i]:
-                count += 1
-        corr.append(count / (len(d1) - j))
+        pairs = pd.concat([d1, d2.shift(j)], axis=1).dropna()
+        corr.append((pairs.iloc[:, 0] == pairs.iloc[:, 1]).mean())
     print(corr)
     plt.bar([0, 1, 2, 3, 4, 5, 6, 7, 8], corr)
-    plt.title('Correlation between Sentiment Change and Stock Returns')
-    plt.ylabel('Percent same')
-    plt.xlabel('Lagging factor')
+    plt.title('Directional agreement between sentiment and price changes')
+    plt.ylabel('Proportion with the same direction')
+    plt.xlabel('Sentiment leads price by N trading observations')
     plt.tight_layout()
-    plt.show()
+    plt.tight_layout()
+    plt.savefig(FIGURES / 'lag_agreement.png', dpi=180)
+    plt.close()
 
     vectorizer = TfidfVectorizer(stop_words="english")
     vec_catch = vectorizer.fit_transform(WHITE_HOUSE_data['Content'])
 
     # Reduce dimensions
-    pca = PCA(n_components=2)
+    pca = PCA(n_components=2, svd_solver='full')
     reduced = pca.fit_transform(vec_catch.toarray())
 
     # Assign PCA results back to WHITE_HOUSE_data
     WHITE_HOUSE_data[["pca1", "pca2"]] = reduced
-    print(WHITE_HOUSE_data)
+    #print(WHITE_HOUSE_data)
 
 
     # Run KMeans
     K = 2
-    km = KMeans(n_clusters=K)
+    km = KMeans(n_clusters=K, random_state=42, n_init=10)
     km.fit(WHITE_HOUSE_data[["pca1", "pca2"]])
 
     # Plot
@@ -177,11 +175,15 @@ def main():
         palette="plasma", s=150
     )
     plt.title("KMeans Clustering")
-    plt.show()
+    plt.tight_layout()
+    plt.savefig(FIGURES / 'pca_kmeans.png', dpi=180)
+    plt.close()
 
     # Create a new scatter plot colored by stock movement
     # Create a mapping of dates to stock movements
-    stock_movement_dict = dict(zip(df['Date'], df['stock_price'].diff() > 0))
+    price_change = df['stock_price'].diff()
+    stock_movement_dict = dict(zip(df.loc[price_change.notna(), 'Date'],
+                                   price_change.dropna() > 0))
     
     # Map each press release date to its corresponding stock movement
     WHITE_HOUSE_data['Stock_Movement'] = WHITE_HOUSE_data['Date'].map(stock_movement_dict)
@@ -206,7 +208,7 @@ def main():
         down_data["pca1"],
         down_data["pca2"],
         c='red',
-        label='Stock Down',
+        label='Stock Down or Unchanged',
         s=150,
 
     )
@@ -214,10 +216,13 @@ def main():
     plt.xlabel("PCA Component 1")
     plt.ylabel("PCA Component 2")
     plt.legend()
-    plt.show()
+    plt.tight_layout()
+    plt.savefig(FIGURES / 'pca_stock_movement.png', dpi=180)
+    plt.close()
 
-    print(df)
-main()
+    print("Saved plots in", FIGURES)
 
+if __name__ == "__main__":
+    main()
 
 
