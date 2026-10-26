@@ -70,9 +70,9 @@ The PCA and K-means work is included in the code and shown above, but is not dis
 
 ## Files
 
-- `White house scrape.py`: Collects text and publication dates from the White House website.
+- `whitehouse_scrape.py`: Collects text and publication dates from the White House website.
 - `stock_data.py`: Downloads VOO prices and saves them to `stock_data.csv`.
-- `Sentiment analysis.py`: Runs the analysis and saves the graphs.
+- `sentiment_analysis.py`: Runs the analysis and saves the graphs.
 - `Whitehouse_scrape_APR_6.csv`: The original White House dataset.
 - `stock_data.csv`: Historical VOO prices downloaded again for this version.
 - The PNG files in this folder are the images displayed in this README. New runs save images in a `figures` folder.
@@ -87,7 +87,7 @@ python -m pip install -r requirements.txt
 
 With both CSV files in the folder, run:
 
-python "Sentiment analysis.py"
+python sentiment_analysis.py
 
 The graphs will be saved in the figures folder.
 
