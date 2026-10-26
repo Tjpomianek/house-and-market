@@ -100,13 +100,8 @@ def main():
     df["Sent change"] = (df['sentiment_n'].diff())
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
-
-
     df['Daily Return'] = (scaler.fit_transform(df[['Daily Return']]) - 0.5)
     #df['Sent change'] = scaler.fit_transform(df[['Sent change']])
-
-
-
 
     #print(df)
     plt.plot(df['stock_n'], label = "Stock price")
@@ -117,11 +112,7 @@ def main():
     plt.tight_layout()
     plt.savefig(FIGURES / 'price_sentiment.png', dpi=180)
     plt.close()
-
-
-
-
-
+    
     # fix this plot
     plt.plot(df['Daily Return'], label = 'Daily Return')
     plt.plot(df['Sent change'], label = 'Sentiment change')
@@ -160,7 +151,6 @@ def main():
     # Assign PCA results back to WHITE_HOUSE_data
     WHITE_HOUSE_data[["pca1", "pca2"]] = reduced
     #print(WHITE_HOUSE_data)
-
 
     # Run KMeans
     K = 2
