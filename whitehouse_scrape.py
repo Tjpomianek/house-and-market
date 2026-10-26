@@ -46,16 +46,16 @@ def main():
 
     PRES_action_df = page('https://www.whitehouse.gov/presidential-actions/')
 
-    Articals_df = page('https://www.whitehouse.gov/articles/')
+    Articles_df = page('https://www.whitehouse.gov/articles/')
 
-    Brefings_df = page('https://www.whitehouse.gov/briefings-statements/')
+    Briefings_df = page('https://www.whitehouse.gov/briefings-statements/')
 
     Facts_df = page('https://www.whitehouse.gov/fact-sheets/')
 
-    Remaks_df = page('https://www.whitehouse.gov/remarks/')
+    Remarks_df = page('https://www.whitehouse.gov/remarks/')
 
     # Step 1: Combine them all
-    combined_df = pd.concat([PRES_action_df, Articals_df, Brefings_df, Facts_df, Remaks_df], ignore_index=True)
+    combined_df = pd.concat([PRES_action_df, Articles_df, Briefings_df, Facts_df, Remarks_df], ignore_index=True)
 
     # Step 2: Convert the first column to datetime (assuming it's the date column)
     combined_df.iloc[:, 0] = pd.to_datetime(combined_df.iloc[:, 0], format='%B %d, %Y')
