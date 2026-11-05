@@ -1,6 +1,6 @@
 # The White House and the Stock Market
 
-Created by Teddy Pomianek, Neil Keltcher, and Bryan Ma.
+Created by Teddy Pomianek, Neil Keltcher, and Bryan Ma. Revised analysis by Teddy Pomianek.
 
 ## About the Project
 
@@ -8,16 +8,16 @@ Does the tone of White House publications line up with how the stock market move
 
 We collected every article, statement, fact sheet, remark, and presidential action the White House published between January 20 and April 4, 2025. Then we scored how positive or negative each one sounded and compared those scores with the price of VOO, an ETF that tracks the S&P 500.
 
-## What We Found
+## Findings
 
-Short answer: we didn't find a meaningful connection.
+Short answer: there's no meaningful connection.
 
-- We checked how often sentiment and VOO's price moved in the same direction, both on the same day and with delays of up to 8 trading days. Agreement ranged from about 0.37 to 0.58, which is roughly what you'd expect from flipping a coin.
+- Sentiment and VOO's price were compared to see how often they moved in the same direction, both on the same day and with delays of up to 8 trading days. Agreement ranged from about 0.37 to 0.58, which is roughly what you'd expect from flipping a coin.
 - The biggest outlier came at a delay of 1, where prices moved opposite to the previous day's sentiment about 63% of the time. With only about 50 observations and nine delays tested, one result like that is easy to get by chance.
 - VOO dropped from late February into April, but sentiment didn't follow the same trend, and the day-to-day movements didn't line up.
-- K-means sorted the documents into two groups based on their wording. When we colored those same documents by whether the market went up the next day, no pattern showed up.
+- K-means sorted the documents into two groups based on their wording. When those same documents were colored by whether the market went up the next day, no pattern showed up.
 
-## How We Did It
+## How It Works
 
 - Scraped publication dates and text from the White House website with BeautifulSoup and Requests.
 - Cleaned the text and removed duplicate documents.
@@ -45,7 +45,7 @@ How much VOO's price and sentiment changed each day. Both are scaled to fit betw
 
 How often sentiment and price moved in the same direction. A delay of 0 compares the same day. A delay of 1 compares the previous day's sentiment change with today's price change, and so on. The dashed line at 0.5 shows what random chance would look like.
 
-One thing to keep in mind: we used opening prices, and the market opens before most of the day's publications come out. That means a delay of 1 is the first real test of whether sentiment comes before a price move.
+One thing to keep in mind: the analysis uses opening prices, and the market opens before most of the day's publications come out. That means a delay of 1 is the first real test of whether sentiment comes before a price move.
 
 ![Directional agreement](lag_agreement.png)
 
@@ -63,7 +63,7 @@ The same chart, but colored by whether VOO's price went up at the next market op
 
 ## Changes from the Original Report
 
-The [original report](Project_Report.pdf) is what we turned in for class. Since then, we've revisited the analysis and fixed some problems, so the graphs and conclusions here are different:
+The [original report](Project_Report.pdf) is what our group turned in for class. After the course, I revisited the analysis and fixed several problems, so the graphs and conclusions here are different:
 
 - Fixed how publications were matched to trading days and corrected the delay calculation.
 - Removed duplicate documents and cleaned up the text format.
@@ -71,8 +71,8 @@ The [original report](Project_Report.pdf) is what we turned in for class. Since 
 - Used freshly downloaded VOO prices, and opening prices instead of closing prices.
 - Dropped the annualized volatility analysis from the report.
 - Added the PCA and K-means analysis, which isn't in the report.
-- The report's title mentions linear regression, but we never actually fit a regression model.
-- The report concluded there was a clear positive relationship. After the fixes, the data doesn't support that.
+- The report's title mentions linear regression, but no regression model was actually fit.
+- The report concluded there was a clear positive relationship based on how the graphs looked. Measuring how often the two series actually moved together doesn't support that.
 
 ## Files
 
@@ -94,8 +94,8 @@ pip install -r requirements.txt
 python sentiment_analysis.py
 ```
 
-The graphs save to the project folder and replace the ones shown here. To download fresh stock data, run `python stock_data.py`. You don't need to rerun the scraper since the original data is included, and the White House site has changed since we collected it anyway.
+The graphs save to the project folder and replace the ones shown here. To download fresh stock data, run `python stock_data.py`. You don't need to rerun the scraper since the original data is included, and the White House site has changed since it was collected anyway.
 
 ## Limitations
 
-This was an exploratory project with a short window of about 50 trading days. TextBlob is a general sentiment tool and wasn't built for political or financial language. White House publications are written by the administration itself, so their tone isn't a neutral read on what's happening. Even if we had found a pattern, it wouldn't prove that White House statements cause or predict market moves.
+This was an exploratory project with a short window of about 50 trading days. TextBlob is a general sentiment tool and wasn't built for political or financial language. White House publications are written by the administration itself, so their tone isn't a neutral read on what's happening. Even if a pattern had shown up, it wouldn't prove that White House statements cause or predict market moves.
